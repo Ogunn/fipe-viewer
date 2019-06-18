@@ -21,3 +21,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# temp
+/exemples
+/json-server
+TO_BE_CONTINUED_FROM.md
