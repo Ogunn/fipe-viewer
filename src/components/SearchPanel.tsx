@@ -5,6 +5,9 @@ export interface IState {
   selectedBrand: IBrand;
   modelList: Array<IModel>;
   selectedModel: IModel;
+  vehicleList: Array<IVehicle>;
+  selectedVehicle: IVehicle;
+  selectedVehiclePerYear: IVehicle;
 }
 
 export interface IBrand {
@@ -15,6 +18,13 @@ export interface IBrand {
 export interface IModel {
   name: string;
   id: number;
+}
+
+export interface IVehicle {
+  name: string;
+  id: number;
+  preco?: string;
+  combustivel?: string;
 }
 
 export default class SearchPanel extends React.Component<{}, IState> {
@@ -31,6 +41,15 @@ export default class SearchPanel extends React.Component<{}, IState> {
         name: '',
         id: 0
       },
+      vehicleList: [],
+      selectedVehicle: {
+        name: '',
+        id: 0
+      },
+      selectedVehiclePerYear: {
+        name: '',
+        id: 0
+      }
     };
   }
 
@@ -59,7 +78,33 @@ export default class SearchPanel extends React.Component<{}, IState> {
     }
   };
 
-  fetchVehicleList = (modelId: number): void => {};
+  fetchVehicleList = (modelId: number): void => {
+    const brandId = this.state.selectedBrand.id;
+
+    if (brandId !== 0 && modelId !== 0) {
+      fetch(
+        `http://fipeapi.appspot.com/api/1/carros/veiculo/${brandId}/${modelId}.json`
+      )
+        .then(response => response.json())
+        .then(data => this.setState({ vehicleList: data }))
+        .catch(erro => console.log(erro));
+    }
+  };
+
+  fetchVehicle = (vehicleId: number): void => {
+    const brandId = this.state.selectedBrand.id;
+    const modelId = this.state.selectedModel.id;
+
+    fetch(
+      `http://fipeapi.appspot.com/api/1/carros/veiculo/${brandId}/${modelId}/${vehicleId}.json`
+    )
+      .then(response => response.json())
+      .then(data => {
+        this.setState({ selectedVehiclePerYear: data });
+        console.log(data);
+      })
+      .catch(erro => console.log(erro));
+  };
 
   handleBrandsInputChange = (
     event: React.FormEvent<HTMLInputElement>
@@ -97,9 +142,30 @@ export default class SearchPanel extends React.Component<{}, IState> {
     }
   };
 
+  handleVehicleInputChange = (
+    event: React.FormEvent<HTMLInputElement>
+  ): void => {
+    const { vehicleList } = this.state;
+
+    const selectedVehicleName: string = event.currentTarget.value;
+    const selectedVehicleObject: IVehicle = vehicleList.filter(
+      vehicle => vehicle.name === selectedVehicleName
+    )[0];
+
+    if (selectedVehicleObject) {
+      if (selectedVehicleName !== this.state.selectedVehicle.name) {
+        this.fetchVehicle(selectedVehicleObject.id);
+      }
+    }
+  };
+
   render() {
-    const { brandList } = this.state;
-    const { modelList } = this.state;
+    const {
+      brandList,
+      modelList,
+      vehicleList,
+      selectedVehiclePerYear
+    } = this.state;
 
     return (
       <form>
@@ -120,6 +186,19 @@ export default class SearchPanel extends React.Component<{}, IState> {
             ))}
           </datalist>
         </fieldset>
+        <fieldset>
+          <input list="vehicles" onChange={this.handleVehicleInputChange} />
+          <datalist id="vehicles">
+            {vehicleList.map(vehicle => (
+              <option value={vehicle.name} key={vehicle.id} />
+            ))}
+          </datalist>
+        </fieldset>
+
+        <p>Ano do Veículo: {selectedVehiclePerYear.id}</p>
+        <p>Nome do veículo: {selectedVehiclePerYear.name}</p>
+        <p>Preço do veículo: {selectedVehiclePerYear.preco}</p>
+        <p>Preço do veículo: {selectedVehiclePerYear.combustivel}</p>
       </form>
     );
   }
