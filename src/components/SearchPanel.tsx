@@ -1,4 +1,5 @@
 import * as React from 'react';
+import './SearchPanel.css';
 
 export interface IState {
   brandList: Array<IBrand>;
@@ -168,34 +169,58 @@ export default class SearchPanel extends React.Component<{}, IState> {
     } = this.state;
 
     return (
-      <form>
-        <fieldset>
-          <input list="carBrands" onChange={this.handleBrandsInputChange} />
-          <datalist id="carBrands">
-            {brandList.map(brand => (
-              <option value={brand.name} key={brand.id} />
-            ))}
-          </datalist>
-          <p>Marca selecionada: {this.state.selectedBrand.name}</p>
+      <form className="search-panel">
+        <h3>Tabela FIPE</h3>
+        <fieldset className="input-group">
+          <label>
+            Selecione a marca
+            <input
+              list="carBrands"
+              className="input"
+              onChange={this.handleBrandsInputChange}
+            />
+            <datalist id="carBrands">
+              {brandList.map(brand => (
+                <option value={brand.name} key={brand.id} />
+              ))}
+            </datalist>
+          </label>
         </fieldset>
-        <fieldset>
-          <input list="carModels" onChange={this.handleModelInputChange} />
-          <datalist id="carModels">
-            {modelList.map(model => (
-              <option value={model.name} key={model.id} />
-            ))}
-          </datalist>
+        <fieldset className="input-group">
+          <label>
+            Selecione o modelo
+            <input
+              list="carModels"
+              className="input"
+              onChange={this.handleModelInputChange}
+            />
+            <datalist id="carModels">
+              {modelList.map(model => (
+                <option value={model.name} key={model.id} />
+              ))}
+            </datalist>
+          </label>
         </fieldset>
-        <fieldset>
-          <input list="vehicles" onChange={this.handleVehicleInputChange} />
-          <datalist id="vehicles">
-            {vehicleList.map(vehicle => (
-              <option value={vehicle.name} key={vehicle.id} />
-            ))}
-          </datalist>
+        <fieldset className="input-group">
+          <label>
+            Selecione o ano
+            <input
+              list="vehicles"
+              className="input"
+              onChange={this.handleVehicleInputChange}
+            />
+            <datalist id="vehicles">
+              {vehicleList.map(vehicle => (
+                <option value={vehicle.name} key={vehicle.id} />
+              ))}
+            </datalist>
+          </label>
         </fieldset>
 
-        <p>Ano do Veículo: {selectedVehiclePerYear.id}</p>
+        <p>
+          Ano do Veículo:{' '}
+          {selectedVehiclePerYear.id === 0 ? '' : selectedVehiclePerYear.id}
+        </p>
         <p>Nome do veículo: {selectedVehiclePerYear.name}</p>
         <p>Preço do veículo: {selectedVehiclePerYear.preco}</p>
         <p>Preço do veículo: {selectedVehiclePerYear.combustivel}</p>
